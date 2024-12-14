@@ -13,7 +13,7 @@ def main() -> None:
         left: list[int] = []
         right: list[int] = []
         for line in lines:
-            leftNum, rightNum = [int(i) for i in line.split("   ")]
+            leftNum, rightNum = [int(i) for i in line.split()]
             left.append(leftNum)
             right.append(rightNum)
 
