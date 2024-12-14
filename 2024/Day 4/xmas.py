@@ -1,7 +1,15 @@
+import sys
+
+
 def main() -> None:
-    with open("data.txt") as file:
+    # Get input file name
+    infile = sys.argv[1]
+
+    with open(infile) as file:
+        # Read file data
         lines = file.read().splitlines()
 
+        # Iterate through each row and column and count the number of times an X-MAS appears
         matches = 0
         for i, line in enumerate(lines[:-2]):
             for j, _ in enumerate(line[:-2]):
@@ -9,10 +17,13 @@ def main() -> None:
                 if hasXmas(area):
                     matches += 1
 
+        # Display results
         print(f"Matches: {matches}")
         
 
 def hasXmas(area: list[str]) -> bool:
+    """Returns True if a 3x3 area has an X-MAS, otherwise False"""
+
     sub1 = "".join(area[i][i] for i in range(3))
     if sub1 not in ("MAS", "SAM"):
         return False
