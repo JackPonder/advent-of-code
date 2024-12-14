@@ -12,3 +12,6 @@ venv/
 
 # PyCharm
 .idea/
+
+# Input data
+*.txt
