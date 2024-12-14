@@ -1,17 +1,21 @@
+import sys
 import re
 
 
 def main() -> None:
-    with open("data.txt") as file:
-        # Read data
+    # Get input file name
+    infile = sys.argv[1]
+
+    with open(infile) as file:
+        # Read file data
         data = file.read()
         
         # Search patterns
-        mulPattern = "mul\([0-9]+,[0-9]+\)"
-        doPattern = "do\(\)"
-        dontPattern = "don't\(\)"
+        mulPattern = r"mul\([0-9]+,[0-9]+\)"
+        doPattern = r"do\(\)"
+        dontPattern = r"don't\(\)"
 
-        # Find all pattern matches
+        # Find all pattern matches in file data
         matches = ["".join(i) for i in re.findall(f"({mulPattern})|({doPattern})|({dontPattern})", data)]
 
         # Execute matches
@@ -26,7 +30,7 @@ def main() -> None:
             elif match == "don't()":
                 enabled = False
 
-        # Display sum
+        # Display results
         print(f"Sum: {sum}")
 
 
