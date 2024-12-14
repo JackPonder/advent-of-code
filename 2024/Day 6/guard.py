@@ -1,19 +1,27 @@
+import sys
+
+
 def main() -> None:
-    with open("data.txt") as file:
-        # Read map data into memory
+    # Get input file name
+    infile = sys.argv[1]
+
+    with open(infile) as file:
+        # Read map data
         map = [list(line) for line in file.read().splitlines()]
 
-        # Traverse map
+        # Move guard through map
         traverse(map)
 
         # Get number of guard-occupied positions
         distinctPositions = sum(row.count("X") for row in map)
         
-        # Print findings
+        # Display results
         print(f"Distinct Positions: {distinctPositions}")
         
 
 def traverse(map: list[list[str]]) -> None:
+    """Moves the guard throughout the map inplace until the guard leaves the map"""
+
     # Get guard starting position
     row, col = getGuardPosition(map)
 
@@ -49,12 +57,14 @@ def traverse(map: list[list[str]]) -> None:
 
 
 def getGuardPosition(map: list[list[str]]) -> tuple[int, int]:
+    """Returns the position of the guard (^) on a given map"""
+
     for i, line in enumerate(map):
         for j, space in enumerate(line):
             if space == "^":
                 return (i, j)
 
-    raise ValueError("Item not found in list")
+    raise ValueError("Guard not found on map")
 
 
 if __name__ == "__main__":
