@@ -1,41 +1,34 @@
-DIRECTIONS = {
-    "^": (-1, 0),
-    ">": (0, 1),
-    "V": (1, 0),
-    "<": (0, -1),
-}
-
-
 def main() -> None:
-    with open("data.txt") as file, open("out.txt", "w") as output:
-        # Read mapa data into memory
+    with open("data.txt") as file:
+        # Read map data into memory
         map = [list(line) for line in file.read().splitlines()]
 
-        # Get new traversed map
-        map = traversed(map)
-
-        # Write new map to file
-        output.writelines("".join(row) + "\n" for row in map)
+        # Traverse map
+        traverse(map)
 
         # Get number of guard-occupied positions
         distinctPositions = sum(row.count("X") for row in map)
         
-        # Print finding
+        # Print findings
         print(f"Distinct Positions: {distinctPositions}")
         
 
-def traversed(map: list[list[str]]) -> list[list[str]]:
+def traverse(map: list[list[str]]) -> None:
     # Get guard starting position
-    row, col = search(map)
+    row, col = getGuardPosition(map)
 
     # Get map boundaries
     rowMax = len(map)
     colMax = len(map[0])
 
+    # Set starting direction
+    DIRECTIONS = [(-1, 0), (0, 1), (1, 0), (0, -1)]
+    direction = 0
+
     # Move guard throughout the map until he moves offscreen
     while True:
         # Get next guard position
-        rowOffset, colOffset = DIRECTIONS[map[row][col]]
+        rowOffset, colOffset = DIRECTIONS[direction]
         rowNext, colNext = row + rowOffset, col + colOffset
 
         # Stop if guard hits map boundary
@@ -45,7 +38,7 @@ def traversed(map: list[list[str]]) -> list[list[str]]:
 
         if map[rowNext][colNext] == "#":
             # Turn guard if next space is blocked
-            map[row][col] = getNextDirection(map[row][col])
+            direction = (direction + 1) % 4
         else:
             # Move guard forward if next space is empty
             map[rowNext][colNext] = map[row][col]
@@ -53,16 +46,9 @@ def traversed(map: list[list[str]]) -> list[list[str]]:
         
             # Update guard position
             row, col = rowNext, colNext
-    
-    return map
 
 
-def getNextDirection(current: str) -> str:
-    options = list(DIRECTIONS.keys())
-    return options[(options.index(current) + 1) % 4]
-
-
-def search(map: list[list[str]]) -> tuple[int, int]:
+def getGuardPosition(map: list[list[str]]) -> tuple[int, int]:
     for i, line in enumerate(map):
         for j, space in enumerate(line):
             if space == "^":
