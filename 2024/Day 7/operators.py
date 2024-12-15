@@ -32,13 +32,13 @@ def isPossible(test: int, operands: list[int], curr: int | None = None) -> bool:
     if curr is None:
         curr = operands.pop(0)
 
-    # If current value matches test value, test value was reached
-    if curr == test:
-        return True
-
-    # If current value goes over test value or all operands have been used, test value was not reached
-    if curr > test or len(operands) == 0:
+    # If current value is over test value, test value will not be reached
+    if curr > test:
         return False
+
+    # Once all operands have been used, check if test value was reached
+    if len(operands) == 0:
+        return curr == test
 
     # Recursively search all operator combinations to determine if test value is reachable
     return isPossible(test, operands[1:], curr + operands[0]) or isPossible(test, operands[1:], curr * operands[0])
