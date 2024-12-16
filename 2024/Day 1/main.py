@@ -17,15 +17,17 @@ def main() -> None:
             left.append(leftNum)
             right.append(rightNum)
 
-        # Sort both lists
+        # Sort both lists to calculate distance
         left.sort()
         right.sort()
 
-        # Calculate distance between both lists
+        # Calculate distance and similarity between both lists
         distance = sum(abs(leftNum - rightNum) for leftNum, rightNum in zip(left, right))
+        similarity = sum(num * right.count(num) for num in left)
 
         # Display results
         print(f"Distance: {distance}")
+        print(f"Similarity: {similarity}")
 
 
 if __name__ == "__main__":
