@@ -11,10 +11,10 @@ def main() -> None:
 
         # Parse program data
         a, b, c = [int(line[12:]) for line in lines[:3]]
-        program = [int(i) for i in lines[-1][9:].split(",")]
+        program = [int(i) for i in lines[4][9:].split(",")]
 
         # Get program outputs
-        outputs: list[int] = getOutputs(program, a, b, c)
+        outputs = getOutputs(program, a, b, c)
 
         # Print results
         print(f"Output: {','.join(str(i) for i in outputs)}")
