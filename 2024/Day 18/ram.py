@@ -24,8 +24,17 @@ def main() -> None:
         # Calculate minimum number of steps to reach exit
         steps = getFewestSteps(map, (0, 0), (bound, bound))
 
+        # Add more bytes until exit is unreachable
+        byte = None
+        for i in range(bytesFallen, len(bytes)):
+            map[bytes[i]] = "#"
+            if getFewestSteps(map, (0, 0), (bound, bound)) == sys.maxsize:
+                byte = bytes[i]
+                break
+
         # Print results
         print(f"Steps: {steps}")
+        print(f"Byte: {byte}")
 
 
 def getFewestSteps(map: dict[tuple[int, int], str], start: tuple[int, int], end: tuple[int, int]) -> int:
@@ -55,7 +64,7 @@ def getFewestSteps(map: dict[tuple[int, int], str], start: tuple[int, int], end:
             if steps[node] + 1 < steps[adjacent]:
                 steps[adjacent] = steps[node] + 1
                 unvisited.append(adjacent)
-    
+
     return steps[end]
 
 
