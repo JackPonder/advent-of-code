@@ -31,14 +31,14 @@ def main() -> None:
 def getFewestSteps(map: dict[tuple[int, int], str], start: tuple[int, int], end: tuple[int, int]) -> int:
     """Returns the minimum number of steps to reach the bottom right corner of the given area"""
 
-    # Set up inital steps for each node
+    # Set inital steps for each node
     unvisited = [start]
     steps = {pos: 0 if pos == start else sys.maxsize for pos, val in map.items() if val != "#"}
 
     # Traverse each node, calculating the shortest path to each adjacent node until all nodes have been searched
     while len(unvisited) != 0:
-        # Select next unvisited node
-        node = unvisited[0]
+        # Get next unvisited node
+        node = unvisited.pop(0)
         
         # Search all adjacent nodes
         for offset in [(1, 0), (0, 1), (-1, 0), (0, -1)]:
@@ -55,9 +55,6 @@ def getFewestSteps(map: dict[tuple[int, int], str], start: tuple[int, int], end:
             if steps[node] + 1 < steps[adjacent]:
                 steps[adjacent] = steps[node] + 1
                 unvisited.append(adjacent)
-  
-        # Mark current node as visited
-        unvisited.remove(node)
     
     return steps[end]
 
