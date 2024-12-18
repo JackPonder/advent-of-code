@@ -33,14 +33,13 @@ def getLowestScore(
     """Returns the lowest possible score to navigate from start to end in a given maze"""
 
     # Set initial scores and directions for each node
-    unvisited = [pos for pos, val in maze.items() if val != "#"]
-    scores = {node: 0 if node == start else sys.maxsize for node in unvisited}
-    directions = {node: (0, 1) if node == start else None for node in unvisited}
+    unvisited = [start]
+    scores = {node: 0 if node == start else sys.maxsize for node, val in maze.items() if val != "#"}
+    directions = {node: (0, 1) if node == start else None for node, val in maze.items() if val != "#"}
 
     # Traverse each node, calculating the shortest path to each adjacent node until all nodes have been searched
     while len(unvisited) != 0:
-        # Search unvisited node with lowest score 
-        unvisited.sort(key=lambda node: scores[node])
+        # Select next unvisited node
         node = unvisited[0]
 
         # Iterate through adjacent nodes and update their scores
@@ -50,8 +49,8 @@ def getLowestScore(
             rowOffset, colOffset = offset
             adjacent = row + rowOffset, col + colOffset
 
-            # Ignore visited nodes
-            if adjacent not in unvisited:
+            # Ignore nodes outside map boundaries
+            if adjacent not in scores:
                 continue
 
             # Update adjacent node if a shorter path is found
@@ -59,6 +58,7 @@ def getLowestScore(
             if scores[node] + edge < scores[adjacent]:
                 scores[adjacent] = scores[node] + edge
                 directions[adjacent] = offset
+                unvisited.append(adjacent)
 
         # Mark current node as visited
         unvisited.remove(node)
