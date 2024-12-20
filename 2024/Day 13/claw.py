@@ -1,48 +1,47 @@
 import sys
 import re
-import math
 
 
 def main() -> None:
     # Get input file name
     infile = sys.argv[1]
 
+    # Read file data
     with open(infile) as file:
-        # Read file data
         machines = file.read().split("\n\n")
 
-        # Iterate through each machine and count the number of tokens spent at each
-        total = 0
-        for machine in machines:
-            # Parse button and prize data
-            a, b, prize = [tuple(int(i) for i in re.findall("[0-9]+", line)) for line in machine.splitlines()]
+    # Iterate through each machine and count the number of tokens spent
+    t1, t2 = 0, 0
+    for machine in machines:
+        # Parse button and prize data
+        a, b, (px, py) = [tuple(int(i) for i in re.findall("[0-9]+", line)) for line in machine.splitlines()]
 
-            # Add number of tokens spent at machine to the total if prize is reachable
-            tokens = getTokens(a, b, prize) # type: ignore
-            if tokens is not None:
-                total += tokens
+        # Add number of tokens spent at machine to the total
+        t1 += getNumTokens(a, b, (px, py)) # type: ignore
+        t2 += getNumTokens(a, b, (px + 10000000000000, py + 10000000000000)) # type: ignore
 
-        # Display results
-        print(f"Tokens: {total}")
+    # Print results
+    print(f"Part 1: {t1}")
+    print(f"Part 2: {t2}")
 
 
-def getTokens(a: tuple[int, int], b: tuple[int, int], prize: tuple[int, int]) -> int | None:
-    """Returns the minimum number of tokens needed to reach the prize, or None if the prize is unreachable"""
+def getNumTokens(a: tuple[int, int], b: tuple[int, int], prize: tuple[int, int]) -> int:
+    """Returns the number of tokens needed to reach the prize, or 0 if the prize is unreachable"""
 
-    # Button and prize data
+    # Unpack button and prize data
+    ax, ay = a
+    bx, by = b
     px, py = prize
-    dxa, dya = a
-    dxb, dyb = b
 
-    # Look for prize solutions until each button has been pressed 100 times
-    minTokens = math.inf
-    for i in range(101):
-        if (px % dxb == 0) and (px / dxb) == (py / dyb):
-            minTokens = min(minTokens, i * 3 + px // dxb)
+    # Calculate number of button presses to reach the prize 
+    aPresses = ((px / bx) - (py / by)) / ((ax / bx) - (ay / by))
+    bPresses = (px - ax * aPresses) / bx 
 
-        px, py = px - dxa, py - dya
+    # Prize is reachable if number of A and B presses are integers
+    if abs(aPresses - round(aPresses)) < 0.001 and abs(bPresses - round(bPresses)) < 0.001:
+        return 3 * round(aPresses) + round(bPresses)
 
-    return int(minTokens) if minTokens != math.inf else None
+    return 0
 
 
 if __name__ == "__main__":
