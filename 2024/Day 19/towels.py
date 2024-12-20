@@ -1,6 +1,5 @@
 import sys
-
-from collections import Counter
+import functools
 
 
 def main() -> None:
@@ -12,7 +11,7 @@ def main() -> None:
         firstLine, remainingLines = file.read().split("\n\n")
 
     # Parse towel patterns and desired designs
-    patterns = firstLine.split(", ")
+    patterns = tuple(firstLine.split(", "))
     designs = remainingLines.splitlines()
 
     # Calculate number of possible designs and number of different arrangements
@@ -29,27 +28,19 @@ def main() -> None:
     print(f"Total Arrangements: {totalArrangements}")
 
 
-def getNumArrangements(
-    design: str, 
-    patterns: list[str], 
-    cache: Counter[str] | None = None,
-) -> int:
+@functools.cache
+def getNumArrangements(design: str, patterns: tuple[str, ...]) -> int:
     """Returns the number of different arrangements of patterns that can be used to create a design"""
 
-    # Initialize cache if none is given
-    if cache is None:
-        cache = Counter({"": 1})
+    if len(design) == 0:
+        return 1
 
-    # Return cached result if it exists
-    if design in cache:
-        return cache[design]
-
-    # Recursively add up number of possible arrangements
+    total = 0
     for pattern in patterns:
         if design.startswith(pattern):
-            cache[design] += getNumArrangements(design[len(pattern):], patterns, cache)
+            total += getNumArrangements(design[len(pattern):], patterns)
 
-    return cache[design]
+    return total
 
 
 if __name__ == "__main__":
