@@ -5,27 +5,26 @@ def main() -> None:
     # Get input file name
     infile = sys.argv[1]
 
+    # Read file data
     with open(infile) as file:
-        # Read file data
-        data = file.read()
+        first, second = file.read().split("\n\n")
 
-        # Parse rules and updates
-        first, second = data.split("\n\n")
-        rules = [[int(i) for i in line.split("|")] for line in first.splitlines()]
-        updates = [[int(i) for i in line.split(",")] for line in second.splitlines()]
+    # Parse rules and updates
+    rules = [[int(i) for i in line.split("|")] for line in first.splitlines()]
+    updates = [[int(i) for i in line.split(",")] for line in second.splitlines()]
 
-        # Calculate sum of middle page numbers of the updates
-        correct, incorrect = 0, 0
-        for update in updates:
-            orderedUpdate = ordered(update, rules)
-            if orderedUpdate == update:
-                correct += orderedUpdate[len(orderedUpdate) // 2]
-            else:
-                incorrect += orderedUpdate[len(orderedUpdate) // 2]
+    # Calculate sum of middle page numbers of the updates
+    correct, incorrect = 0, 0
+    for update in updates:
+        orderedUpdate = ordered(update, rules)
+        if update == orderedUpdate:
+            correct += orderedUpdate[len(orderedUpdate) // 2]
+        else:
+            incorrect += orderedUpdate[len(orderedUpdate) // 2]
 
-        # Print results
-        print(f"Sum of Correct Pages: {correct}")
-        print(f"Sum of Incorrect Pages: {incorrect}")
+    # Print results
+    print(f"Sum of Correct Pages: {correct}")
+    print(f"Sum of Incorrect Pages: {incorrect}")
 
 
 def ordered(update: list[int], rules: list[list[int]]) -> list[int]:
@@ -41,7 +40,7 @@ def ordered(update: list[int], rules: list[list[int]]) -> list[int]:
         # If a rule is broken, reorder the update to fix it, then recheck if the update is ordered correctly 
         bIndex, aIndex = update.index(before), update.index(after)
         if bIndex > aIndex:
-            reorderd = update.copy()
+            reorderd = update[:]
             reorderd[bIndex] = after
             reorderd[aIndex] = before
             return ordered(reorderd, rules)
