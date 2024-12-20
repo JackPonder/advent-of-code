@@ -1,5 +1,7 @@
 import sys
 
+from collections import Counter
+
 
 def main() -> None:
     # Get input file name
@@ -8,54 +10,40 @@ def main() -> None:
     # Get number of blinks
     blinks = int(sys.argv[2])
 
+    # Read file data
     with open(infile) as file:
-        # Read file data
-        stones: dict[int, int] = {}
-        for num in file.read().split():
-            num = int(num)
-            if num not in stones:
-                stones[num] = 0
-            stones[num] += 1
+        stones = Counter(int(i) for i in file.read().split())
 
-        # Update stones every blink
-        for _ in range(blinks):
-            stones = getNextStones(stones)
+    # Update stones every blink
+    for _ in range(blinks):
+        stones = getNextStones(stones)
 
-        # Count number of stones after blinking
-        numStones = sum(i for i in stones.values())
+    # Count number of stones after blinking
+    numStones = stones.total()
 
-        # Display results
-        print(f"{numStones} Stones")
+    # Display results
+    print(f"{numStones} Stones")
 
 
-def getNextStones(stones: dict[int, int]) -> dict[int, int]:
+def getNextStones(stones: Counter[int]) -> Counter[int]:
     """Returns next set of stones after one blink"""
 
     # Iterate over each unique stone and update them according to blinking rules
-    nextStones: dict[int, int] = {}
+    nextStones: Counter[int] = Counter()
     for num, occurrences in stones.items():
-        # Keep track of new stones created
-        replacements: list[int] = []
-
         # Stones engraved with 0 are replaced with 1
         if num == 0:
-            replacements.append(1)
+            nextStones[1] += occurrences
 
         # Stones with even number of digits are split in half
         elif len(str(num)) % 2 == 0:
             mid = len(str(num)) // 2
-            replacements.append(int(str(num)[:mid]))
-            replacements.append(int(str(num)[mid:]))
+            nextStones[int(str(num)[mid:])] += occurrences
+            nextStones[int(str(num)[:mid])] += occurrences
 
         # Other stones are multiplied by 2024
         else:
-            replacements.append(num * 2024)
-
-        # Update new stones with replacements
-        for newNum in replacements:
-            if newNum not in nextStones:
-                nextStones[newNum] = 0
-            nextStones[newNum] += occurrences
+            nextStones[num * 2024] += occurrences
 
     return nextStones
 
