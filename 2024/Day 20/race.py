@@ -5,6 +5,9 @@ def main() -> None:
     # Get input file name
     infile = sys.argv[1]
 
+    # Get max cheat duration
+    maxCheat = int(sys.argv[2])
+
     # Read file data
     with open(infile) as file:
         lines = file.read().splitlines()
@@ -18,19 +21,7 @@ def main() -> None:
     path = getPath(map, start, end)
 
     # Iterate through each space in the path, counting the number of cheats that save 100 steps
-    numCheats = 0
-    for i, (x, y) in enumerate(path):
-        for (c1x, c1y) in [(x + 1, y), (x, y + 1), (x - 1, y), (x, y - 1)]:
-            if map.get((c1x, c1y)) != "#":
-                continue
-
-            for (c2x, c2y) in [(c1x + 1, c1y), (c1x, c1y + 1), (c1x - 1, c1y), (c1x, c1y - 1)]:
-                if (c2x, c2y) not in path:
-                    continue
-
-                saved = (path.index((c2x, c2y)) - i) - 2
-                if saved >= 100:
-                    numCheats += 1
+    numCheats = sum(getNumCheats(path, pos, maxCheat) for pos in path)
 
     # Display results
     print(f"Cheats: {numCheats}")
@@ -41,7 +32,7 @@ def getPath(
     start: tuple[int, int], 
     end: tuple[int, int],
 ) -> list[tuple[int, int]]:
-    """Returns a list of spaces that represents a path between start and end spaces on a map"""
+    """Returns the path between start and end spaces on a map"""
 
     # Path starts at beginning space
     path = [start]
@@ -60,6 +51,38 @@ def getPath(
                 break
 
     return path
+
+
+def getNumCheats(
+    path: list[tuple[int, int]],
+    start: tuple[int, int],
+    maxCheat: int,
+) -> int:
+    """Returns number of viable cheats that begin at a given start position on the map"""
+
+    # Unpack start space
+    x, y = start
+
+    # Find all possible spaces a cheat can end
+    numCheats = 0
+    for dx in range(-maxCheat, maxCheat + 1):
+        for dy in range(-maxCheat, maxCheat + 1):
+            # Ending space must be reachable within max cheat duration
+            duration = abs(dx) + abs(dy)
+            if duration > maxCheat:
+                continue
+
+            # Cheats must end on the path
+            end = (x + dx, y + dy)
+            if end not in path:
+                continue
+
+            # Only include cheats that save 100 steps or more
+            saved = path.index(end) - path.index(start) - duration
+            if saved >= 100:
+                numCheats += 1
+
+    return numCheats
 
 
 if __name__ == "__main__":
