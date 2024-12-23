@@ -13,13 +13,21 @@ def main() -> None:
     total = 0
     for num in numbers:
         for _ in range(2000):
-            num = ((num * 64) ^ num) % 16777216
-            num = ((num // 32) ^ num) % 16777216
-            num = ((num * 2048) ^ num) % 16777216
+            num = getNextSecretNumber(num)
         total += num
 
     # Display results
     print(f"Sum: {total}")
+
+
+def getNextSecretNumber(num: int) -> int:
+    """Returns the next secret number given an initial number"""
+
+    num = ((num * 64) ^ num) % 16777216
+    num = ((num // 32) ^ num) % 16777216
+    num = ((num * 2048) ^ num) % 16777216
+
+    return num
 
 
 if __name__ == "__main__":
