@@ -15,30 +15,32 @@ def main() -> None:
         name, val = line.split(":")
         wires[name] = int(val)
 
+    # Parse gate info
+    gates: list[tuple[str, str, str, str]] = []
+    for line in second.splitlines():
+        a, gate, b, _, out = line.split()
+        gates.append((a, gate, b, out))
+
     # Calculate gate outputs for each gate
-    lines = second.splitlines()
-    while len(lines) != 0:
-        for line in lines[:]:
-            # Parse gate info
-            a, gate, b, _, out = line.split()
+    while len(gates) != 0:
+        # Get next gate to evaluate
+        a, gate, b, out = gates.pop(0)
 
-            # Do not attempt to calculate gate output if inputs are unknown
-            if a not in wires or b not in wires:
-                continue
+        # Do not attempt to calculate gate output if inputs are unknown
+        if a not in wires or b not in wires:
+            gates.append((a, gate, b, out))
+            continue
 
-            # Calculate output gate value
-            if gate == "AND":
-                wires[out] = wires[a] & wires[b]
-            elif gate == "OR":
-                wires[out] = wires[a] | wires[b]
-            elif gate == "XOR":
-                wires[out] = wires[a] ^ wires[b]
-
-            # Mark this gate as complete
-            lines.remove(line)
+        # Calculate output gate value
+        if gate == "AND":
+            wires[out] = wires[a] & wires[b]
+        elif gate == "OR":
+            wires[out] = wires[a] | wires[b]
+        elif gate == "XOR":
+            wires[out] = wires[a] ^ wires[b]
 
     # Calculate decimal number from wires starting with 'z'
-    out = sum(wires[z] * 2 ** int(z[1:]) for z in wires if z.startswith("z"))
+    out = sum(wires[wire] * 2 ** int(wire[1:]) for wire in wires if wire.startswith("z"))
 
     # Display results
     print(f"Decimal: {out}")
