@@ -15,3 +15,7 @@ venv/
 
 # Input data
 *.txt
+
+# Executables
+*.exe
+*.out
